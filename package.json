@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node ./build/index.js /Users/juan/Documents/GitHub/vu-ai/build/index.js",
+    "start": "node --experimental-specifier-resolution=node ./build/index.js /Users/jlsoto/WorkspaceN/Web/dovela/mcp/mcp-client-test/build/src/index-mcp.js",
     "build": "tsc && chmod 777 build/index.js",
     "build:weather": "tsc && chmod 755 build/w-index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,6 +22,7 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.14",
