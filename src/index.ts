@@ -13,24 +13,21 @@ const mcp = new MCPClient();
 
 await mcp.connectToServer(process.argv[2]);
 
-app.get('/', async (req:Request, res:Response) =>  {
+app.get('/', async (req : Request, res : Response) => {
 
   const getData = GetOnlyQuestions();
 
   res.send('App')
 })
 
-app.post('/message', async (req:Request, res:Response) =>  {
+app.post('/message', async (req : Request, res : Response) : Promise < void > => {
 
   const response = await mcp.processQuery(req.body.text);
 
-  res.jsonp(response)
-
 })
 
-app.listen(port, () => { 
-  console.log("Server running at PORT: ", port); 
-}).on("error", (error) => {
-  // gracefully handle error
-  throw new Error(error.message);
+app.listen(port, () => {
+    console.log("Server running at PORT: ", port);
+}).on("error", (error) => { // gracefully handle error
+    throw new Error(error.message);
 });
