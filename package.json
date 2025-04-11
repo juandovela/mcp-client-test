@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node ./build/index.js /Users/jlsoto/WorkspaceN/Web/dovela/mcp/mcp-client-test/build/src/index-mcp.js",
-    "build": "tsc && chmod 777 build/index.js",
+    "start": "node --experimental-specifier-resolution=node ./build/index.js /Users/juan/Documents/GitHub/vu-ai/build/index.js",
+    "build": "tsc && chmod 777 /src/index.ts",
     "build:weather": "tsc && chmod 755 build/w-index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,7 +19,8 @@
     "@modelcontextprotocol/sdk": "^1.8.0",
     "algoliasearch": "^5.23.2",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
