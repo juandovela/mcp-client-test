@@ -1,8 +1,7 @@
-import { Chat, GenerateContentResponse, GoogleGenAI } from "@google/genai";
 import express, { Request, Response } from "express";
-// import { MCPClient } from './src/MCPClient.js'
 import dotenv from "dotenv";
 import { MCPClient } from './index-mcp.js'
+import { ConverToZOD, GetOnlyQuestions } from './utils/ConvertToZOD.js'
 
 dotenv.config();
 const app = express()
@@ -16,22 +15,13 @@ await mcp.connectToServer(process.argv[2]);
 
 app.get('/', async (req:Request, res:Response) =>  {
 
-  // const response = await mcp.processQuery({
-  //   role: 'user',
-  //   content: [
-  //     {
-  //       type: 'text',
-  //       text: 'Achudame con la casa, plis'
-  //     }
-  //   ]});
+  const getData = GetOnlyQuestions();
 
-  // res.jsonp(response)
-
+  res.send('App')
 })
 
 app.post('/message', async (req:Request, res:Response) =>  {
 
-  console.log('text', req.body);
   const response = await mcp.processQuery(req.body.text);
 
   res.jsonp(response)

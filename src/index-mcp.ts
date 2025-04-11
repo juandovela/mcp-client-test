@@ -1,15 +1,12 @@
-import { Anthropic } from "@anthropic-ai/sdk";
 import {
   MessageParam,
   Tool,
 } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import readline from "readline/promises";
 import { algoliasearch } from "algoliasearch";
 import dotenv from "dotenv";
-import { Chat, FunctionCallingConfigMode, GenerateContentResponse, GoogleGenAI } from "@google/genai";
-import { response } from "express";
+import { Chat, FunctionCallingConfigMode, GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
@@ -101,14 +98,14 @@ export class MCPClient {
         };
       });
 
-      console.log(
-        "Processed and sanitized tools:",
-        JSON.stringify(this.tools, null, 2)
-      );
-      console.log(
-        "Tools ready:",
-        this.tools.map(({ name }) => name)
-      );
+      // console.log(
+      //   "Processed and sanitized tools:",
+      //   JSON.stringify(this.tools, null, 2)
+      // );
+      // console.log(
+      //   "Tools ready:",
+      //   this.tools.map(({ name }) => name)
+      // );
 
       // *** Initialize chat AFTER tools are populated ***
       if (this.tools.length > 0) {
@@ -201,13 +198,8 @@ export class MCPClient {
 
       console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
 
-      const result = await this.mcp.callTool({
-        name: toolName ? toolName : 'star-recommendations-flow',
-        arguments: toolArgs,
-      });
-
       const response2 = await chat.sendMessage({
-        message: JSON.stringify(result.content),
+        message: JSON.stringify(toolArgs),
         config: {
           systemInstruction: `Con la información proporcionada, podrías ir haciendome solo una pregunta a la vez. Yo te contestaré las demás en las siguientes interacciones. Comienza en la primera pregunta por preguntarme mi nombre`,
           toolConfig: {
@@ -221,50 +213,41 @@ export class MCPClient {
         }
       });
 
+      console.log('response2', response2?.candidates?.[0]?.content?.parts);
+
+      console.log('checktoolArgs', toolArgs);
+
       // @ts-ignore
-      const checkForDataComplete = result.content.map((info:{text:string,type:string })  => {
-        console.log('every:',!JSON.parse(info.text)  )
-        return {
-          active: !JSON.parse(info.text).active,
-          data: JSON.parse(info.text).value
+      const checkForDataComplete = Object.keys(toolArgs).map((key:string) => {
+
+        if(toolArgs) {
+          // @ts-ignore
+          const { value, active } = toolArgs[key];
+          return { value, active }
+        } else {
+          return {
+            value: '',
+            active: false
+          }
         }
       });
 
-      // @ts-ignore
-      let checker = checkForDataComplete.every((v:boolean) => v.active === true)
+      console.log('checkForDataComplete', checkForDataComplete);
+
+      let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
 
       if(checker) {
 
-          console.log('datos completos')
-          const r = await client.search({
-            requests: [
-              {
-                indexName: 'test-algolia',
-                query: `${checkForDataComplete[1].data}`,
-                filters: `_origin.division.name:${checkForDataComplete[1].data}`,
-                numericFilters: [
-                  `specs.minBed:${checkForDataComplete[2].data -1} TO ${checkForDataComplete[2].data +1}`,
-                  `specs.minGarage:${checkForDataComplete[3].data -1} TO ${checkForDataComplete[3].data +1}`
-                ]
-              }
-            ]
-          });
+        const result = await this.mcp.callTool({
+          name: toolName ? toolName : 'star-recommendations-flow',
+          arguments: toolArgs,
+        }) ;
 
-          // @ts-ignore
-          const { hits } = r.results[0];
-
-          const listOfHouse: { type: 'text', text: string }[] = hits.map((lot: any) => {
-
-            const specs = JSON.stringify(lot.specs);
-
-            return {
-              type: "text",
-              text: `Encontramos en la siguiente comunidad ${lot._origin.community.name}, en la ciudad de ${lot._origin.division.name}, con las siguientes specs: ${specs}`,
-            }
-          })
+        console.log('result:', result.content);
 
           const response3 = await chat.sendMessage({
-            message: listOfHouse,
+            // @ts-ignore
+            message: result.content,
             config: {
               systemInstruction: "Respondeme con las mejores casas del la lista que te di",
             }
@@ -281,13 +264,10 @@ export class MCPClient {
       } else {
         responseForUser.jsonData = {
           response2: response2,
-          result: result,
+          result: toolArgs,
           toolArgs: toolArgs
         };
         responseForUser.textAI = 'Text unknow';
-  
-        console.log('this.mcp.callTool', result)
-        console.log('Resutl Call:', result);
         console.log('toolArgs', toolArgs)
   
         return responseForUser;
