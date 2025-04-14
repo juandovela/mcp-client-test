@@ -1,12 +1,10 @@
 import {
-    MessageParam,
     Tool,
   } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
-  import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-  import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-  import dotenv from "dotenv";
-  import { Chat, FunctionCallingConfigMode, GoogleGenAI } from "@google/genai";
-  import { json } from './db/db.js';
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import dotenv from "dotenv";
+import { Chat, FunctionCallingConfigMode, GoogleGenAI } from "@google/genai";
   
   dotenv.config();
   
@@ -45,7 +43,7 @@ import {
       return sanitizedObject;
     };
   
-    async connectToServer(serverScriptPath: string): Promise<void> { // Added return type
+    async connectToServer(serverScriptPath: string, systemInstruction:string): Promise<void> { // Added return type
       console.log(`Attempting to connect to server: ${serverScriptPath}`);
       try {
         const isJs = serverScriptPath.endsWith(".js");
@@ -62,19 +60,21 @@ import {
         console.log(`Using command: ${command}`);
         this.transport = new StdioClientTransport({
           command,
-          args: [serverScriptPath],
+          args: [serverScriptPath]
         });
+				
         await this.mcp.connect(this.transport); // Added await here
         console.log("MCP transport connected.");
-  
+
         const toolsResult = await this.mcp.listTools();
-        console.log("Received tools from MCP:", JSON.stringify(toolsResult, null, 2));
+				console.log("Received tools from MCP:");
+        // console.log("Received tools from MCP:", JSON.stringify(toolsResult, null, 2));
   
         // Map and sanitize tools
         // @ts-ignore
         this.tools = toolsResult.tools.map((tool: any) => { // Added type for tool
           const cleanedSchema = this.deepSanitizeSchema(tool.inputSchema);
-          console.log(`Mapping tool: ${tool.name}. Using Cleaned Schema:`, JSON.stringify(cleanedSchema, null, 2));
+          // console.log(`Mapping tool: ${tool.name}. Using Cleaned Schema:`, JSON.stringify(cleanedSchema, null, 2));
           return {
             name: tool.name,
             description: tool.description || `Tool named ${tool.name}`, // Add fallback description
@@ -97,7 +97,7 @@ import {
             chat = ai.chats.create({
                 model: "gemini-2.0-flash", // Consider making model configurable
                 config: {
-                    systemInstruction: `${json.questionaires[0].systemInstruction}`,
+                    systemInstruction: `${systemInstruction}`,
                     tools: [
                         {
                             functionDeclarations: this.tools // Now this.tools is populated
@@ -180,8 +180,8 @@ import {
         const toolName = functionCall.name;
         const toolArgs = functionCall.args;
   
-        console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
-  
+        // console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
+
         const response2 = await chat.sendMessage({
           message: JSON.stringify(toolArgs),
           config: {
@@ -223,7 +223,7 @@ import {
         if(checker) {
   
           const result = await this.mcp.callTool({
-            name: toolName ? toolName : 'star-recommendations-flow',
+            name: toolName ? toolName : 'start-recommendation-flow',
             arguments: toolArgs,
           }) ;
   
