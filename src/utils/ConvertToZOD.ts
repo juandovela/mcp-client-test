@@ -60,13 +60,11 @@ export const ConverToZOD = () => {
 
   const ZOD:any = {};
 
-  const [ questionaires ] = json.questionaires;
+  const { title, nameTool, systemInstruction, questions } = json;
 
-  ZOD.title = z.string().describe(questionaires.title);
-  ZOD.nameTool = z.string().describe(questionaires.nameTool);
-  ZOD.systemInstruction = z.string().describe(questionaires.systemInstruction);
-
-  const { questions } = questionaires;
+  ZOD.title = z.string().describe(title);
+  ZOD.nameTool = z.string().describe(nameTool);
+  ZOD.systemInstruction = z.string().describe(systemInstruction);
 
   const questionZod:any = {};
 
@@ -77,8 +75,6 @@ export const ConverToZOD = () => {
     Object.keys(jsonNameQuestion).map((key:string) => {
 
       const { uid, type, describe, options } = jsonNameQuestion[key];
-
-      console.log('key',key)
 
       questionZod[key] = z.object(
         {
@@ -105,13 +101,11 @@ export const GetOnlyQuestions = () => {
 
   const ZOD:any = {};
 
-  const [ questionaires ] = json.questionaires;
+  const { title, nameTool, systemInstruction, questions } = json;
 
-  ZOD.title = z.string().describe(questionaires.title);
-  ZOD.nameTool = z.string().describe(questionaires.nameTool);
-  ZOD.systemInstruction = z.string().describe(questionaires.systemInstruction);
-
-  const { questions } = questionaires;
+  ZOD.title = z.string().describe(title);
+  ZOD.nameTool = z.string().describe(nameTool);
+  ZOD.systemInstruction = z.string().describe(systemInstruction);
 
   const questionZod:any = {};
 
