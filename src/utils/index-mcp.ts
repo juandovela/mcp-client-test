@@ -57,18 +57,18 @@ import { Chat, FunctionCallingConfigMode, GoogleGenAI } from "@google/genai";
             : "python3"
           : process.execPath;
   
-        console.log(`Using command: ${command}`);
+        console.log(`Using command: ${command} and ${serverScriptPath}`);
         this.transport = new StdioClientTransport({
           command,
           args: [serverScriptPath]
         });
-				
+				console.log("Trying to transport.");
         await this.mcp.connect(this.transport); // Added await here
         console.log("MCP transport connected.");
 
         const toolsResult = await this.mcp.listTools();
 				console.log("Received tools from MCP:");
-        // console.log("Received tools from MCP:", JSON.stringify(toolsResult, null, 2));
+        console.log("Received tools from MCP:", JSON.stringify(toolsResult, null, 2));
   
         // Map and sanitize tools
         // @ts-ignore

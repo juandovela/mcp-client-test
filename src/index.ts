@@ -1,7 +1,9 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
-import { MCPClient } from './index-mcp.js'
-import { json } from "./db/db.js";
+// import { MCPClient } from './utils/index-mcp.js'
+import { MCPClientGemini } from './utils/index-google.js'
+// import { MCPClientDeepSeek } from './utils/index-deepseek.js';
+// import { MCPClientChatGPT } from './utils/index-chatgpt.js';
 import * as fs from 'fs';
 
 dotenv.config();
@@ -10,68 +12,73 @@ const port = 3000;
 
 app.use(express.json());
 
-const mcp = new MCPClient();
-
-const link = './db/db.json';
-
-const { systemInstruction } = json;
+// const mcp = new MCPClient();
+const mcpGemini = new MCPClientGemini();
+// const mcpDS = new MCPClientDeepSeek();
+// const mcpGPT = new MCPClientChatGPT();
 
 app.get('/', async (req:Request, res:Response) =>  {
 
   res.json({ data: 'app' }).status(200);
-})
-
-app.post('/message', async (req:Request, res:Response) =>  {
-
-  const response = await mcp.processQuery(req.body.text);
-
-  res.jsonp(response).status(200);
 
 })
 
-app.post('/config', async (req:Request, res:Response) =>  {
+app.post('/init', async (req:Request, res:Response) =>  {
 
-  const response = req.body.data;
+  // const response = await mcp.initChat(req.body.text);
 
-  fs.writeFile(link, JSON.stringify(req.body.data), { flag: 'w+', encoding: 'utf8' }, async (err) => {
-
-    if(!err) {
-      if(response.systemInstruction) {
-        await mcp.connectToServer(process.argv[2], systemInstruction);
-        res.json(response).status(200);
-      } else {
-        await mcp.connectToServer(process.argv[2], '');
-        res.json(response).status(200);
-      }
-    } else {
-      res.json({
-        error: err
-      }).status(500);
-    }
-
-  });
+  // res.jsonp(response).status(200);
 
 });
 
-app.get('/config', async (req:Request, res:Response) =>  {
+app.post('/message', async (req:Request, res:Response) =>  {
 
-  console.log('entre');
+  // const response = await mcp.processQuery(req.body.text);
 
-  if (fs.existsSync(link)) {
-    fs.readFile(link, (err, data) => {
-      if (!err && data) {
-        res.jsonp(JSON.parse(data.toString())).status(200);
-      } else {
-        res.json({ data: err }).status(500);
-      }
-    })
-  }
+  res.jsonp({response: ''}).status(200);
+
+});
+
+app.post('/message-gemini', async (req:Request, res:Response) =>  {
+
+  const { prompt, history } = req.body;
+  console.log(prompt, history);
+  const response = await mcpGemini.queryAI(prompt, history);
+
+  res.jsonp(response).status(200);
+
+});
+
+app.post('/message-gemini-history', async (req:Request, res:Response) =>  {
+
+  const response = await mcpGemini.queryAIHistory();
+
+  res.jsonp(response).status(200);
+
+});
+
+app.post('/message-deepseek', async (req:Request, res:Response) =>  {
+
+  // const response = await mcpDS.queryAI(req.body.text);
+
+  // res.jsonp(response).status(200);
+
+});
+
+app.post('/message-chatgpt', async (req:Request, res:Response) =>  {
+
+  // const response = await mcpGPT.queryAI(req.body.text);
+
+  // res.jsonp(response).status(200);
 
 });
 
 app.listen(port, async () => { 
-  console.log("Server running at PORT: ", port); 
-  await mcp.connectToServer(process.argv[2],systemInstruction );
+  console.log("Server running at PORT: ", port);
+  const systemInstruction = 'Con la ayuda de la tool star-recommendation-flow brindada, necesito que me vayas guiando con las preguntas para poder encontrar un hogar, haz una pregunta a la vez. Luego usa la tool para mandar llamar la api de algolia';
+  // await mcpGPT.initChat(systemInstruction );
+  await mcpGemini.initChat(systemInstruction );
+  // await mcp.connectToServer(process.argv[2],systemInstruction );
 }).on("error", (error) => {
   // gracefully handle error
   throw new Error(error.message);
