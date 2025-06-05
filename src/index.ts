@@ -5,12 +5,14 @@ import { MCPClientGemini } from './utils/index-google.js'
 // import { MCPClientDeepSeek } from './utils/index-deepseek.js';
 // import { MCPClientChatGPT } from './utils/index-chatgpt.js';
 import * as fs from 'fs';
+import cors from 'cors';
 
 dotenv.config();
 const app = express()
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 // const mcp = new MCPClient();
 const mcpGemini = new MCPClientGemini();
