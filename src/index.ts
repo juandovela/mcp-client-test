@@ -59,6 +59,14 @@ app.post('/message-gemini-history', async (req:Request, res:Response) =>  {
 
 });
 
+app.post('/message-gemini-history-iframe', async (req:Request, res:Response) =>  {
+
+  const response = await mcpGemini.queryAIHistoryIframe();
+
+  res.jsonp(response).status(200);
+
+});
+
 app.post('/message-deepseek', async (req:Request, res:Response) =>  {
 
   // const response = await mcpDS.queryAI(req.body.text);

@@ -272,6 +272,46 @@ const questionMCP = {
   ]
 }
 
+const eventsIframe = {
+  "tools": [
+    {
+      "name": "start-recommendation-flow",
+      "description": "Rellena los datos con información brindada por el usuario, no le hagas otras preguntas que se salgan de los datos",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "optionHotspot": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "description": "name of the hotspot selected"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "add list with options to choose one for the hotspot, options are: kitchen, kittchenete, roof"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false,
+            "description": "Return a JSON with the hotspot selected if i chose one, if not, return an empty object and ask the user to choose one"
+          },
+        },
+        "required": [
+          "optionHotspot"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}
+
 export class MCPClientGemini {
 
   private tools: Tool[] = [];
@@ -678,6 +718,174 @@ export class MCPClientGemini {
     // console.log("response", JSON.stringify(response1?.candidates?.[0]));
 
     // return response;
+
+  }
+
+  async queryAIHistoryIframe() {
+
+    const responseForUser: {
+      code: number,
+      historyChat: {
+        role: string;
+        parts: Part[] | undefined
+      }[],
+      text: Part[] | undefined,
+      question: (Record<string, unknown> | undefined)[]
+    } = {
+      code: 200,
+      text: undefined,
+      historyChat: [],
+      question: []
+    };
+
+    // @ts-ignore
+    this.tools = eventsIframe.tools.map((tool: any) => { // Added type for tool
+      const cleanedSchema = this.deepSanitizeSchema(tool.inputSchema);
+      // console.log(`Mapping tool: ${tool.name}. Using Cleaned Schema:`, JSON.stringify(cleanedSchema, null, 2));
+      return {
+        name: tool.name,
+        description: tool.description || `Tool named ${tool.name}`, // Add fallback description
+        parameters: cleanedSchema
+      };
+    });
+
+    if (!chat) {
+      responseForUser.code = 500;
+      responseForUser.historyChat.push({
+        role: 'user',
+        parts: [ {
+          text: 'error'
+        } ]
+      })
+      return responseForUser;
+    }
+
+    const response1 = await chat.sendMessage({
+      message: 'Podrías preguntarme por un hotspot que me gustaría ver en la casa, solo dame las opciones que estan en la lista previamente proporcionada?',
+      config: {
+        tools: [
+          {
+            functionDeclarations: this.tools
+          },
+        ],
+        toolConfig: {
+          functionCallingConfig: {
+            // Force the model to call the specified function
+            mode: FunctionCallingConfigMode.ANY,
+            // Specify the exact tool name to force
+            allowedFunctionNames: ['start-recommendation-flow']
+          }
+        }
+      }
+    });
+
+    if (response1?.candidates?.[0]?.content?.parts?.[0]?.functionCall) {
+      const functionCall = response1.candidates[0].content.parts[0].functionCall;
+      console.log('Function Call:', functionCall);
+
+      const toolName = functionCall.name;
+      const toolArgs = functionCall.args;
+
+      console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
+
+      const response2 = await chat.sendMessage({
+        message: JSON.stringify(toolArgs),
+        config: {
+          systemInstruction: `Con la información proporcionada, dame dame la lista de opciones para que el usuario pueda elegir una, y luego me mandes la opción elegida por funcion calling`,
+          toolConfig: {
+            functionCallingConfig: {
+              // Force the model to call the specified function
+              mode: FunctionCallingConfigMode.ANY,
+              // Specify the exact tool name to force
+              allowedFunctionNames: ['start-recommendation-flow']
+            }
+          }
+        }
+      });
+
+      // console.log('response2', response2?.candidates?.[0]?.content?.parts);
+
+      console.log('checktoolArgs', toolArgs);
+      
+      // @ts-ignore
+      const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
+
+        if (toolArgs) {
+          // @ts-ignore
+          const { value, active } = toolArgs[key];
+          return { value, active }
+        } else {
+          return {
+            value: '',
+            active: false
+          }
+        }
+      });
+
+      console.log('checkForDataComplete', checkForDataComplete);
+  
+      let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
+
+      if (checker) {
+
+        console.log('checkForDataComplete2', checker);
+
+        const alertsData = await makeLLMAlgoliaRequest(toolArgs);
+    
+        if (!alertsData ) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Ha occurido el siguiente error ${alertsData} hay que informar al usuario`,
+              }
+            ],
+          };
+        }
+
+        const response3 = await chat.sendMessage({
+          message: alertsData,
+          config: {
+            systemInstruction: "Regresame la opción que el usuario eligió, si eligio una",
+          }
+        });
+
+        responseForUser.code = 200;
+        responseForUser.historyChat.push({
+          role: 'model',
+          parts: response3.candidates?.[0]?.content?.parts
+        });
+        responseForUser.text = response3.candidates?.[0]?.content?.parts;
+        responseForUser.question = [toolArgs];
+
+        return responseForUser;
+
+      } else {
+
+        responseForUser.code = 200;
+        responseForUser.historyChat.push({
+          role: 'model',
+          parts: response2.candidates?.[0]?.content?.parts
+        });
+        responseForUser.text = response2.candidates?.[0]?.content?.parts
+        responseForUser.question = [toolArgs]
+
+
+        return responseForUser;
+      }
+
+    } else {
+      console.log('Not function call:', response1.candidates?.[0]?.content?.parts);
+      responseForUser.code = 200;
+        responseForUser.historyChat.push({
+          role: 'model',
+          parts: response1.candidates?.[0]?.content?.parts
+        });
+        responseForUser.text = response1.candidates?.[0]?.content?.parts
+        responseForUser.question = []
+
+        return responseForUser;
+    }
 
   }
 
