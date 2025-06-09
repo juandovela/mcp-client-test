@@ -7,7 +7,7 @@ import { response } from "express";
 
 dotenv.config();
 
-const history = [
+const historyComplete = [
   {
     "role": "user",
     "parts": [
@@ -85,6 +85,17 @@ const history = [
     "parts": [
       {
         "text": "2 garages"
+      }
+    ]
+  }
+]
+
+const history = [
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "hola, me ayudas a encontrar una casa?"
       }
     ]
   }
