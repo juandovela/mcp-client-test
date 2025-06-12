@@ -276,36 +276,487 @@ const eventsIframe = {
   "tools": [
     {
       "name": "start-recommendation-flow",
-      "description": "Rellena los datos con información brindada por el usuario, no le hagas otras preguntas que se salgan de los datos",
+      "description": "Actualiza el estado de la personalización de los hotspots de la escena, incluyendo qué hotspot se está editando y qué material se ha seleccionado. Siempre devuelve el estado completo de todos los hotspots para mantener el historial de las elecciones.",
       "inputSchema": {
         "type": "object",
         "properties": {
-          "optionHotspot": {
+          "customization_state": {
             "type": "object",
+            "description": "El objeto principal que contiene el estado completo de todos los hotspots y el progreso de la personalización, cuando vayas guiando al usuario por los hotspots hazlo por orden, los hotspot tienen uno incluido para facilitar la guía.",
             "properties": {
-              "value": {
-                "type": "string",
-                "description": "name of the hotspot selected"
-              },
-              "options": {
-                "type": "array",
-                "items": {
-                  "type": "string"
+              "hotspotEntry": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "1"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "1"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "entry"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Mármol Blanco'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para la entrada. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para la entrada. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,  el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
                 },
-                "description": "add list with options to choose one for the hotspot, options are: kitchen, kittchenete, roof"
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotFinish": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "2"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "2"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "finish"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el 'finish'. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el 'finish'. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotGarage": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "3"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "3"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "garage"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el garage. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el garage. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotRoof": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "4"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "4"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "roof"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el roof. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el roof. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotTrim": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "5"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "5"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "trim"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id", 
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el trim. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el trim. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotWindow": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "6"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "5"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "window"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para la ventana. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 5 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para la ventana. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotFloor": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "7"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "interior"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "floor"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el floor. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 3 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el floor. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotKitchenette": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "8"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "8"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "kitchenette"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para el kitchenette. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 2 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el kitchenette. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotKitchen": {
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "type": "integer",
+                    "description": "9"
+                  },
+                  "uid": {
+                    "type": "string",
+                    "description": "9"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "kitchen"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. '1'" },
+                        // "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": [
+                        "id",
+                        // "name"
+                      ]
+                    },
+                    "description": "Opciones de materiales disponibles para la cocina. El modelo debe referirse a estas opciones. Dale opciones numéricas del 1 al 2 solamente y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para la cocina. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material,   si no le gusta puede seleccionar otro material y si confirma, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "current_hotspot_being_customized_uid": {
+                "type": "string",
+                "description": "El UID del hotspot que actualmente el usuario debe personalizar. Este UID se determina por el orden predefinido de los hotspots y cuál es el siguiente 'pending'. Si todos están 'visited', este campo debe ser vacío."
+              },
+              "next_user_instruction": {
+                "type": "string",
+                "description": "Un mensaje claro y guiado para el usuario, indicando qué hacer a continuación. Por ejemplo: 'Ahora personaliza la Cocina. ¿Qué material eliges?' o 'Excelente. Pasemos al Suelo.' Si todos los hotspots están 'visited', el mensaje debe indicar que la personalización ha terminado."
+              },
+              "flow_status": {
+                "type": "string",
+                "description": "El estado general del flujo de personalización: 'in_progress' si hay hotspots pendientes, o 'completed' si todos los hotspots han sido visitados y se les ha seleccionado un material.",
+                "enum": ["in_progress", "completed"]
               }
             },
             "required": [
-              "value"
+              "hotspotEntry",
+              "hotspotFinish",
+              "hotspotGarage",
+              "hotspotRoof",
+              "hotspotTrim",
+              "hotspotWindow",
+              "hotspotFloor",
+              "hotspotKitchenette",
+              "hotspotKitchen",
+              "current_hotspot_being_customized_uid",
+              "next_user_instruction",
+              "flow_status"
             ],
-            "additionalProperties": false,
-            "description": "Return a JSON with the hotspot selected if i chose one, if not, return an empty object and ask the user to choose one"
-          },
+            "additionalProperties": false
+          }
         },
-        "required": [
-          "optionHotspot"
-        ],
-        "additionalProperties": false,
+        "required": ["customization_state"],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     }
@@ -336,7 +787,7 @@ export class MCPClientGemini {
   async initChat(systemInstruction: string) {
 
     // @ts-ignore
-    this.tools = questionMCP.tools.map((tool: any) => { // Added type for tool
+    this.tools = eventsIframe.tools.map((tool: any) => { // Added type for tool
       const cleanedSchema = this.deepSanitizeSchema(tool.inputSchema);
       // console.log(`Mapping tool: ${tool.name}. Using Cleaned Schema:`, JSON.stringify(cleanedSchema, null, 2));
       return {
@@ -360,7 +811,7 @@ export class MCPClientGemini {
       history: [ // Initial history for the chat session
         {
           role: "user",
-          parts: [{ text: "Iniciando chat para buscar casa" }],
+          parts: [{ text: "Inicializando chat para ayudar al usuario" }],
         }
       ],
     });
@@ -368,7 +819,7 @@ export class MCPClientGemini {
 
   }
 
-  async queryAI(text: string, history:any[]) {
+  async queryAI(text: string, history: any[]) {
 
     history.push({
       role: 'user',
@@ -447,7 +898,7 @@ export class MCPClientGemini {
       // console.log('response2', response2?.candidates?.[0]?.content?.parts);
 
       console.log('checktoolArgs', toolArgs);
-      
+
       // @ts-ignore
       const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
 
@@ -464,16 +915,16 @@ export class MCPClientGemini {
       });
 
       console.log('checkForDataComplete', checkForDataComplete);
-  
-      let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
+
+      let checker = checkForDataComplete.every((v: { active: boolean, value: any }) => !!v.value);
 
       if (checker) {
 
         console.log('checkForDataComplete2', checker);
 
         const alertsData = await makeLLMAlgoliaRequest(toolArgs);
-    
-        if (!alertsData ) {
+
+        if (!alertsData) {
           return {
             content: [
               {
@@ -517,7 +968,7 @@ export class MCPClientGemini {
 
     } else if (response1?.candidates?.[0]?.content?.parts?.[0]?.text) {
       responseForUser.code = 200;
-      responseForUser.text 
+      responseForUser.text
       responseForUser.historyChat.push({
         role: "model",
         parts: response1.candidates[0].content.parts
@@ -527,7 +978,159 @@ export class MCPClientGemini {
       responseForUser.code = 500;
       responseForUser.historyChat.push({
         role: 'user',
-        parts: [{ }]
+        parts: [{}]
+      })
+      return responseForUser;
+    }
+
+  }
+
+  async queryAIIFrame(text: string, history: any[]) {
+
+    history.push({
+      role: 'user',
+      parts: [{
+        text: text
+      }]
+    })
+
+    const responseForUser: {
+      code: number,
+      historyChat: {
+        role: string;
+        parts: Part[] | undefined
+      }[],
+      text: Part[] | undefined,
+      question: (Record<string, unknown> | undefined)[]
+    } = {
+      code: 200,
+      text: undefined,
+      historyChat: history,
+      question: []
+    };
+
+    if (!chat) {
+      responseForUser.code = 500;
+      responseForUser.historyChat.push({
+        role: 'user',
+        parts: [{}]
+      })
+      return responseForUser;
+    }
+
+    const response1 = await chat.sendMessage({
+      message: text,
+      config: {
+        tools: [
+          {
+            functionDeclarations: this.tools
+          },
+        ],
+        toolConfig: {
+          functionCallingConfig: {
+            // Force the model to call the specified function
+            mode: FunctionCallingConfigMode.ANY,
+            // Specify the exact tool name to force
+            allowedFunctionNames: ['start-recommendation-flow']
+          }
+        }
+      }
+    });
+
+    if (response1?.candidates?.[0]?.content?.parts?.[0]?.functionCall) {
+      const functionCall = response1.candidates[0].content.parts[0].functionCall;
+      console.log('Function Call:', functionCall);
+
+      const toolName = functionCall.name;
+      const toolArgs = functionCall.args;
+
+      console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
+
+      const response2 = await chat.sendMessage({
+        message: JSON.stringify(toolArgs),
+        config: {
+          systemInstruction: `Con la información del las tools, necesito que me vayas guiando paso a paso con los puntos que hay en la tool, cada uno tiene un hotspot y multiples materiales a cambiar, ve guiándolo uno por uno, la estuctura tiene un estado para que le pongas en la llave "value", el estado "visited" si ya fue visitado o visit si es el punto a visitar, una vez que el usuario eliga material, puedes marcarlo como visitado y añadirle al siguiente visit`,
+          toolConfig: {
+            functionCallingConfig: {
+              // Force the model to call the specified function
+              mode: FunctionCallingConfigMode.ANY,
+              // Specify the exact tool name to force
+              allowedFunctionNames: ['start-recommendation-flow']
+            }
+          }
+        }
+      });
+
+      // console.log('response2', response2?.candidates?.[0]?.content?.parts);
+
+      console.log('checktoolArgs', toolArgs);
+
+      // @ts-ignore
+      const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
+
+        if (toolArgs) {
+          // @ts-ignore
+          const { value } = toolArgs[key];
+          return { value }
+        } else {
+          return {
+            value: ''
+          }
+        }
+      });
+
+      console.log('checkForDataComplete', checkForDataComplete);
+
+      let checker = false;
+
+      if (checker) {
+
+        console.log('checkForDataComplete2', checker);
+
+        const response3 = await chat.sendMessage({
+          message: [`Vayamos a seleccionar otro material en el siguiente hotspot`],
+          config: {
+            systemInstruction: "Checa las siguientes opciones de hotspot y materiales, si el usuario ha elegido un material, cambia el estado a visited, si no ha elegido ninguno, deja el estado en visit",
+          }
+        });
+
+        responseForUser.code = 200;
+        responseForUser.historyChat.push({
+          role: 'model',
+          parts: response3.candidates?.[0]?.content?.parts
+        });
+        responseForUser.text = response3.candidates?.[0]?.content?.parts
+        responseForUser.question = [toolArgs]
+
+        return responseForUser;
+
+      } else {
+
+        responseForUser.code = 200;
+        responseForUser.historyChat.push({
+          role: 'model',
+          parts: response2.candidates?.[0]?.content?.parts
+        });
+        responseForUser.text = response2.candidates?.[0]?.content?.parts;
+        responseForUser.question = [toolArgs]
+
+
+        return responseForUser;
+      }
+
+    } else if (response1?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      responseForUser.code = 200;
+      responseForUser.text
+      responseForUser.historyChat.push({
+        role: "model",
+        parts: response1.candidates[0].content.parts
+      })
+      return responseForUser
+    } else {
+      responseForUser.code = 500;
+      responseForUser.historyChat.push({
+        role: 'user',
+        parts: [{}]
       })
       return responseForUser;
     }
@@ -566,9 +1169,9 @@ export class MCPClientGemini {
       responseForUser.code = 500;
       responseForUser.historyChat.push({
         role: 'user',
-        parts: [ {
+        parts: [{
           text: 'error'
-        } ]
+        }]
       })
       return responseForUser;
     }
@@ -619,7 +1222,7 @@ export class MCPClientGemini {
       // console.log('response2', response2?.candidates?.[0]?.content?.parts);
 
       console.log('checktoolArgs', toolArgs);
-      
+
       // @ts-ignore
       const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
 
@@ -636,16 +1239,16 @@ export class MCPClientGemini {
       });
 
       console.log('checkForDataComplete', checkForDataComplete);
-  
-      let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
+
+      let checker = checkForDataComplete.every((v: { active: boolean, value: any }) => !!v.value);
 
       if (checker) {
 
         console.log('checkForDataComplete2', checker);
 
         const alertsData = await makeLLMAlgoliaRequest(toolArgs);
-    
-        if (!alertsData ) {
+
+        if (!alertsData) {
           return {
             content: [
               {
@@ -689,15 +1292,15 @@ export class MCPClientGemini {
 
     } else {
       responseForUser.code = 200;
-        responseForUser.historyChat.push({
-          role: 'model',
-          parts: response1.candidates?.[0]?.content?.parts
-        });
-        responseForUser.text = response1.candidates?.[0]?.content?.parts
-        responseForUser.question = []
+      responseForUser.historyChat.push({
+        role: 'model',
+        parts: response1.candidates?.[0]?.content?.parts
+      });
+      responseForUser.text = response1.candidates?.[0]?.content?.parts
+      responseForUser.question = []
 
 
-        return responseForUser;
+      return responseForUser;
     }
 
     // const response2 = await chat.sendMessage({
@@ -753,9 +1356,9 @@ export class MCPClientGemini {
       responseForUser.code = 500;
       responseForUser.historyChat.push({
         role: 'user',
-        parts: [ {
+        parts: [{
           text: 'error'
-        } ]
+        }]
       })
       return responseForUser;
     }
@@ -806,7 +1409,7 @@ export class MCPClientGemini {
       // console.log('response2', response2?.candidates?.[0]?.content?.parts);
 
       console.log('checktoolArgs', toolArgs);
-      
+
       // @ts-ignore
       const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
 
@@ -823,16 +1426,16 @@ export class MCPClientGemini {
       });
 
       console.log('checkForDataComplete', checkForDataComplete);
-  
-      let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
+
+      let checker = checkForDataComplete.every((v: { active: boolean, value: any }) => !!v.value);
 
       if (checker) {
 
         console.log('checkForDataComplete2', checker);
 
         const alertsData = await makeLLMAlgoliaRequest(toolArgs);
-    
-        if (!alertsData ) {
+
+        if (!alertsData) {
           return {
             content: [
               {
@@ -877,14 +1480,14 @@ export class MCPClientGemini {
     } else {
       console.log('Not function call:', response1.candidates?.[0]?.content?.parts);
       responseForUser.code = 200;
-        responseForUser.historyChat.push({
-          role: 'model',
-          parts: response1.candidates?.[0]?.content?.parts
-        });
-        responseForUser.text = response1.candidates?.[0]?.content?.parts
-        responseForUser.question = []
+      responseForUser.historyChat.push({
+        role: 'model',
+        parts: response1.candidates?.[0]?.content?.parts
+      });
+      responseForUser.text = response1.candidates?.[0]?.content?.parts
+      responseForUser.question = []
 
-        return responseForUser;
+      return responseForUser;
     }
 
   }

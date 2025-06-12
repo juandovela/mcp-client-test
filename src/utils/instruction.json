@@ -1,0 +1,427 @@
+{
+  "tools": [
+    {
+      "name": "start-recommendation-flow",
+      "description": "Actualiza el estado de la personalización de los hotspots de la escena, incluyendo qué hotspot se está editando y qué material se ha seleccionado. Siempre devuelve el estado completo de todos los hotspots para mantener el historial de las elecciones.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "customization_state": {
+            "type": "object",
+            "description": "El objeto principal que contiene el estado completo de todos los hotspots y el progreso de la personalización.",
+            "properties": {
+              "hotspotEntry": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "1"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "entry"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'kit_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Mármol Blanco'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para la cocina. El modelo debe referirse a estas opciones. Dale opciones del 1 al 5 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para la cocina. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotFinish": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "2"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "finish"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotGarage": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "3"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "garage"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotRoof": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "4"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "roof"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotTrim": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "5"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "trim"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotWindow": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "5"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "window"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotFloor": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "interior"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "floor"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotKitchenette": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "8"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "kitchenette"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotKitchen": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "9"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "kitchen"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Indica si el hotspot ya ha sido personalizado ('visited') o si aún está pendiente ('pending').",
+                    "enum": ["pending", "visited"]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "description": "ID del material, ej. 'floor_mat_1'" },
+                        "name": { "type": "string", "description": "Nombre del material, ej. 'Baldosa Gris'" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "description": "Opciones de materiales disponibles para el suelo. El modelo debe referirse a estas opciones. Dale opciones del 1 al 3 y que elija un numero, el valor del número cambiara la propiedad de material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "El ID del material que el usuario ha elegido para el suelo. Si no ha elegido ninguno, se deja en vacío. Cuando se selecciona un material, el 'status' de este hotspot debe cambiar a 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "current_hotspot_being_customized_uid": {
+                "type": "string",
+                "description": "El UID del hotspot que actualmente el usuario debe personalizar. Este UID se determina por el orden predefinido de los hotspots y cuál es el siguiente 'pending'. Si todos están 'visited', este campo debe ser vacío."
+              },
+              "next_user_instruction": {
+                "type": "string",
+                "description": "Un mensaje claro y guiado para el usuario, indicando qué hacer a continuación. Por ejemplo: 'Ahora personaliza la Cocina. ¿Qué material eliges?' o 'Excelente. Pasemos al Suelo.' Si todos los hotspots están 'visited', el mensaje debe indicar que la personalización ha terminado."
+              },
+              "flow_status": {
+                "type": "string",
+                "description": "El estado general del flujo de personalización: 'in_progress' si hay hotspots pendientes, o 'completed' si todos los hotspots han sido visitados y se les ha seleccionado un material.",
+                "enum": ["in_progress", "completed"]
+              }
+            },
+            "required": [
+              "hotspotEntry",
+              "hotspotFinish",
+              "hotspotGarage",
+              "hotspotRoof",
+              "hotspotTrim",
+              "hotspotWindow",
+              "hotspotFloor",
+              "hotspotKitchenette",
+              "hotspotKitchen",
+              "current_hotspot_being_customized_uid",
+              "next_user_instruction",
+              "flow_status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": ["customization_state"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}
