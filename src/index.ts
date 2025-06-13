@@ -89,7 +89,8 @@ app.post('/message-chatgpt', async (req:Request, res:Response) =>  {
 app.listen(port, async () => { 
   console.log("Server running at PORT: ", port);
   // const systemInstruction = 'Con la ayuda de la tool star-recommendation-flow brindada, necesito que me vayas guiando con las preguntas para poder encontrar un hogar, haz una pregunta a la vez. Luego usa la tool para mandar llamar la api de algolia';
-  const systemInstruction = 'Con la información proporcionada, necesito que me vayas guiando paso a paso con los puntos que hay en la tool, cada uno tiene un hotspot y multiples materiales a cambiar, ve guiándolo uno por uno, la estuctura tiene un estado para que le pongas en la llave "value", el estado "visited" si ya fue visitado o visit si es el punto a visitar, una vez que el usuario eliga material, puedes marcarlo como visitado y añadirle al siguiente visit';
+  // const systemInstruction = 'Con la información proporcionada, necesito que me vayas guiando paso a paso con los puntos que hay en la tool, cada uno tiene un hotspot y multiples materiales a cambiar, ve guiándolo uno por uno, la estuctura tiene un estado para que le pongas en la llave "value", el estado "visited" si ya fue visitado o visit si es el punto a visitar, una vez que el usuario eliga material, puedes marcarlo como visitado y añadirle al siguiente visit';
+  const systemInstruction = 'With provided information, guide step by step through the points in the tool. Guide one by one.';
   // await mcpGPT.initChat(systemInstruction );
   await mcpGemini.initChat(systemInstruction );
   // await mcp.connectToServer(process.argv[2],systemInstruction );

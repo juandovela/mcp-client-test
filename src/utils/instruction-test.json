@@ -1,0 +1,184 @@
+{
+  "tools": [
+    {
+      "name": "start-recommendation-flow",
+      "description": "We have 2 options, questions and hotspot. The first one is to ask the user for their name, and the second one is to start the customization flow.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "object",
+            "description": "Ask user for their name. The name can be their own name or a generic one like 'guest' or 'friend'.",
+            "properties": {
+              "questionNameJSON": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "q01"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Nombre con el que se identifica el usuario, puede colocar el suyo o preguntar si lo llamamos invitado o amigo"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Si el valor de name está vacio, deja este valor en true, sino cambialo a false"
+                  },
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Añade al array los string, guest y friend"
+                  }
+                },
+                "required": [
+                  "uid",
+                  "value",
+                  "active"
+                ],
+                "additionalProperties": false,
+                "description": "Return name, value and uid of the question"
+              }
+            },
+            "required": [ "questionNameJSON" ],
+            "additionalProperties": false
+          },
+          "hotspot": {
+            "type": "object",
+            "description": "If questions are answered, then start the customization flow. Hotspot contains order of hotspots and their properties, you need guide user in order",
+            "properties": {
+              "hotspotEntry": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "1"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "entry"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Check if the hotspot has been customized or not. If it is customized, it should be 'visited', otherwise 'pending'.",
+                    "enum": [
+                      "pending",
+                      "visited"
+                    ]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID del material, ej. '1'"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    },
+                    "description": "Option of materials available for the entry. The model should refer to these options. Give options from 1 to 3 and let the user choose a number, the value of the number will change the property of material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "This is uid that user has selected for the entry. If not selected, leave it empty. When a material is selected, the 'status' of this hotspot should change to 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              },
+              "hotspotFinish": {
+                "type": "object",
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "description": "2"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "finish"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Check if the hotspot has been customized or not. If it is customized, it should be 'visited', otherwise 'pending'.",
+                    "enum": [
+                      "pending",
+                      "visited"
+                    ]
+                  },
+                  "available_materials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID del material, ej. 'floor_mat_1'"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Nombre del material, ej. 'Baldosa Gris'"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    },
+                    "description": "Option of materials available for the finish. The model should refer to these options. Give options from 1 to 3 and let the user choose a number, the value of the number will change the property of material_selected_id"
+                  },
+                  "material_selected_id": {
+                    "type": "string",
+                    "description": "This is uid that user has selected for the finish. If not selected, leave it empty. When a material is selected, the 'status' of this hotspot should change to 'visited'."
+                  }
+                },
+                "required": [
+                  "uid",
+                  "name",
+                  "status",
+                  "available_materials",
+                  "material_selected_id"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "hotspotEntry",
+              "hotspotFinish"
+            ],
+            "additionalProperties": false
+          },
+          "actualState": {
+            "type": "object",
+            "description": "This is the actual state of the customization flow. It contains the current hotspot being customized and the questions that have been answered.",
+            "properties": {
+              "current_hotspot_being_customized_uid": {
+                "type": "string",
+                "description": "This is the uid of the current hotspot being customized.",
+                "additionalProperties": false
+              }
+            },
+            "required": [ "current_hotspot_being_customized_uid"],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "questions", "hotspot", "actualState"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}
