@@ -20,152 +20,402 @@ const eventFlow = {
       "inputSchema": {
         "type": "object",
         "properties": {
-          "status": {
+          "questions": {
             "type": "object",
             "properties": {
-              "completed": {
-                "type": "boolean",
-                "description": "Indica si todas las preguntas han sido contestadas"
-              },
-              "currentQuestion": {
-                "type": "string",
-                "description": "UID de la pregunta actual (q01, q02, etc.)"
-              },
-              "totalQuestions": {
-                "type": "number",
-                "description": "Número total de preguntas en el flujo"
-              },
-              "answeredQuestions": {
-                "type": "number",
-                "description": "Número de preguntas contestadas"
-              }
-            },
-            "required": ["completed", "currentQuestion", "totalQuestions", "answeredQuestions"],
-            "additionalProperties": false
-          },
-          "q01": {
-            "type": "object",
-            "properties": {
-              "uid": {
-                "type": "string",
-                "description": "q01"
-              },
-              "value": {
-                "type": "string",
-                "description": "Nombre con el que se identifica el usuario, puede colocar el suyo o preguntar si lo llamamos invitado o amigo"
-              },
-              "options": {
+              "q01": {
                 "type": "object",
                 "properties": {
-                  "type": {
-                    "type": "string",
-                    "description": "input"
-                  },
-                  "values": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "uid": { "type": "string", "description": "q01" },
+                  "value": { "type": "string", "description": "Nombre con el que se identifica el usuario, puede colocar el suyo o preguntar si lo llamamos invitado o amigo" },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string", "description": "valor: input" },
+                      "values": {
+                        "type": "array",
+                        "items": { "type": "string", "description": "opciones disponibles para el usuario, valor: friend, guess" },
+                        "description": "friend, guess"
+                      }
                     },
-                    "description": "Para input puede estar vacío"
+                    "required": ["type", "values"],
+                    "additionalProperties": false,
+                    "description": "Configuración de opciones para q01"
                   }
                 },
-                "required": ["type", "values"],
+                "required": ["uid", "value", "options"],
                 "additionalProperties": false,
-                "description": "Configuración del input para la pregunta"
-              }
-            },
-            "required": [
-              "uid",
-              "value",
-              "options"
-            ],
-            "additionalProperties": false,
-            "description": "Return name, value, uid and options of the question"
-          },
-          "q02": {
-            "type": "object",
-            "properties": {
-              "uid": {
-                "type": "string",
-                "description": "q02"
+                "description": "Return name, value, uid and options of the question"
               },
-              "value": {
-                "type": "string",
-                "description": "En que ciudad te gustaría buscar una casa?"
-              },
-              "options": {
+              "q02": {
                 "type": "object",
                 "properties": {
-                  "type": {
+                  "uid": {
                     "type": "string",
-                    "description": "select"
+                    "description": "q02"
                   },
-                  "values": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "value": {
+                    "type": "string",
+                    "description": "¿En que ciudad te gustaría buscar una casa?"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "select"
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                        },
+                        "description": "agrega al array las opciones de las ciudades Las Vegas, Austin, Phoenix"
+                      }
                     },
-                    "description": "Opciones: Las Vegas, Austin, Phoenix"
+                    "required": ["type", "values"],
+                    "additionalProperties": false,
+                    "description": "Configuración del select para la pregunta"
                   }
                 },
-                "required": ["type", "values"],
+                "required": [
+                  "uid",
+                  "value",
+                  "options"
+                ],
                 "additionalProperties": false,
-                "description": "Configuración del select para la pregunta"
-              }
-            },
-            "required": [
-              "uid",
-              "value",
-              "options"
-            ],
-            "additionalProperties": false,
-            "description": "Return name, value, uid and options of the question"
-          },
-          "q03": {
-            "type": "object",
-            "properties": {
-              "uid": {
-                "type": "string",
-                "description": "q03"
+                "description": "Return name, value, uid and options of the question"
               },
-              "value": {
-                "type": "string",
-                "description": "Cual es tu presupuesto?"
-              },
-              "options": {
+              "q03": {
                 "type": "object",
                 "properties": {
-                  "type": {
+                  "uid": {
                     "type": "string",
-                    "description": "range"
+                    "description": "q03"
                   },
-                  "values": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "value": {
+                    "type": "string",
+                    "description": "Cual es tu presupuesto?"
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "range"
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "agrega al array las opciones de presupuesto, valor: min 150,000, max 500,000"
+                      }
                     },
-                    "description": "Opciones: min 150,000, max 500,000"
+                    "required": ["type", "values"],
+                    "additionalProperties": false,
+                    "description": "Configuración del select para la pregunta"
                   }
                 },
-                "required": ["type", "values"],
+                "required": [
+                  "uid",
+                  "value",
+                  "options"
+                ],
                 "additionalProperties": false,
-                "description": "Configuración del select para la pregunta"
+                "description": "Return name, value, uid and options of the question"
+              },
+              "status": {
+                "type": "object",
+                "properties": {
+                  "completed": {
+                    "type": "boolean",
+                    "description": "Indica si todas las preguntas han sido contestadas"
+                  },
+                  "currentQuestion": {
+                    "type": "string",
+                    "description": "UID de la pregunta actual (q01, q02, etc.)"
+                  },
+                  "totalQuestions": {
+                    "type": "number",
+                    "description": "Número total de preguntas en el flujo"
+                  },
+                  "answeredQuestions": {
+                    "type": "number",
+                    "description": "Número de preguntas contestadas"
+                  }
+                },
+                "required": ["completed", "currentQuestion", "totalQuestions", "answeredQuestions"],
+                "additionalProperties": false
               }
             },
-            "required": [
-              "uid",
-              "value",
-              "options"
-            ],
+            "required": ["q01", "q02", "q03", "status"],
             "additionalProperties": false,
-            "description": "Return name, value, uid and options of the question"
+            "description": "Sección de preguntas questions con status y preguntas q01, q02, q03"
+          },
+          "hotspots": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "object",
+                "properties": {
+                  "completed": { "type": "boolean", "description": "Indica si todas las secciones han sido contestadas" },
+                  "currentSection": { "type": "string", "description": "Sección actual (Window Frame, Door, Garage, etc.)" },
+                  "nextSection": { "type": "string", "description": "Siguiente sección (si existe)" },
+                  "totalSections": { "type": "number", "description": "Número total de secciones" },
+                  "answeredSections": { "type": "number", "description": "Número de secciones contestadas" }
+                },
+                "required": ["completed", "currentSection", "nextSection", "totalSections", "answeredSections"],
+                "additionalProperties": false
+              },
+              "Window Frame": {
+                "type": "object",
+                "properties": {
+                  "uid": { "type": "string", "description": "Identificador del item, valor es '6'" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Window Frame" },
+                  "status": { "type": "string", "description": "Estado del item, valor: 'pending', 'visited'" },
+                  "nameObjectsGroup": { "type": "string", "description": "Nombre del grupo de objetos, valor es 'Window Frame'" },
+                  "objectSubtype": { "type": "string", "description": "Subtipo de objeto, valor es 'exterior'" },
+                  "uidHotspot": { "type": "string", "description": "UID del hotspot, valor es '6'" },
+                  "arrayMaterials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nameMaterial": { "type": "string", "description": "Nombre del material, valor: 'mtl_window_frame'" },
+                        "name": { "type": "string", "description": "Nombre visible, valor: 'Taupe'" },
+                        "description": { "type": "string", "description": "Descripción, valor: 'Taupe window frame'" },
+                        "price": { "type": "number", "description": "Precio, valor: 1081" },
+                        "color": { "type": "string", "description": "Color hexadecimal, valor: '#BDB099'" },
+                        "transparent": { "type": "boolean", "description": "Transparente, valor: false" },
+                        "opacity": { "type": "number", "description": "Opacidad, valor: 1" },
+                        "texture": { "type": "string", "description": "URL o string de textura, valor: ''" },
+                        "textureRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false,
+                          "description": "repeticion de la textura"
+                        },
+                        "typeMaterial": { "type": "string", "description": "Tipo de material, valor: 'standard'" },
+                        "isGroup": { "type": "boolean", "description": "Es grupo, valor: false" },
+                        "normalMap": { "type": "string", "description": "Normal map, valor: ''" },
+                        "normalUvRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false,
+                          "description": "normalUV de la textura"
+                        },
+                        "meshes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "nameMesh": { "type": "string", "description": "Nombre del mesh, valor: 'obj_partA_windowzoclo001'" },
+                              "orientationUV": { "type": "number", "description": "Orientación UV, valor: 0" }
+                            },
+                            "required": ["nameMesh", "orientationUV"],
+                            "additionalProperties": false,
+                            "description": "mesh de la textura"
+                          }
+                        }
+                      },
+                      "required": ["nameMaterial", "name", "description", "price", "color", "transparent", "opacity", "texture", "textureRepeat", "typeMaterial", "isGroup", "normalMap", "normalUvRepeat", "meshes"],
+                      "additionalProperties": false,
+                      "description": "materiales de la textura"
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "values": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    },
+                    "required": ["type", "values"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["uid", "value", "status", "nameObjectsGroup", "objectSubtype", "uidHotspot", "arrayMaterials", "options"],
+                "additionalProperties": false,
+                "description": "Pregunta Window Frame"
+              },
+              "Door": {
+                "type": "object",
+                "properties": {
+                  "uid": { "type": "string", "description": "Identificador del item, valor es '1'" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Door" },
+                  "status": { "type": "string", "description": "Estado del item, valor: 'pending', 'visited'" },
+                  "nameObjectsGroup": { "type": "string", "description": "Nombre del grupo de objetos, valor es 'Door'" },
+                  "objectSubtype": { "type": "string", "description": "Subtipo de objeto, valor es 'exterior'" },
+                  "uidHotspot": { "type": "string", "description": "UID del hotspot, valor es '1'" },
+                  "arrayMaterials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nameMaterial": { "type": "string", "description": "Nombre del material, valor: 'mtl_door'" },
+                        "name": { "type": "string", "description": "Nombre visible, valor: 'Taupe'" },
+                        "description": { "type": "string", "description": "Descripción, valor: 'Taupe door'" },
+                        "price": { "type": "number", "description": "Precio, valor: 1081" },
+                        "color": { "type": "string", "description": "Color hexadecimal, valor: '#BDB099'" },
+                        "transparent": { "type": "boolean", "description": "Transparente, valor: false" },
+                        "opacity": { "type": "number", "description": "Opacidad, valor: 1" },
+                        "texture": { "type": "string", "description": "URL o string de textura, valor: ''" },
+                        "textureRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false
+                        },
+                        "typeMaterial": { "type": "string", "description": "Tipo de material, valor: 'standard'" },
+                        "isGroup": { "type": "boolean", "description": "Es grupo, valor: false" },
+                        "normalMap": { "type": "string", "description": "Normal map, valor: ''" },
+                        "normalUvRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false
+                        },
+                        "meshes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "nameMesh": { "type": "string", "description": "Nombre del mesh, valor: 'obj_partA_door001'" },
+                              "orientationUV": { "type": "number", "description": "Orientación UV, valor: 0" }
+                            },
+                            "required": ["nameMesh", "orientationUV"],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": ["nameMaterial", "name", "description", "price", "color", "transparent", "opacity", "texture", "textureRepeat", "typeMaterial", "isGroup", "normalMap", "normalUvRepeat", "meshes"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "values": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    },
+                    "required": ["type", "values"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["uid", "value", "status", "nameObjectsGroup", "objectSubtype", "uidHotspot", "arrayMaterials", "options"],
+                "additionalProperties": false,
+                "description": "Pregunta Door"
+              },
+              "Garage": {
+                "type": "object",
+                "properties": {
+                  "uid": { "type": "string", "description": "Identificador del item, valor es '3'" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Garage" },
+                  "status": { "type": "string", "description": "Estado del item, valor: 'pending', 'visited'" },
+                  "nameObjectsGroup": { "type": "string", "description": "Nombre del grupo de objetos, valor es 'Garage'" },
+                  "objectSubtype": { "type": "string", "description": "Subtipo de objeto, valor es 'exterior'" },
+                  "uidHotspot": { "type": "string", "description": "UID del hotspot, valor es '3'" },
+                  "arrayMaterials": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nameMaterial": { "type": "string", "description": "Nombre del material, valor: 'mtl_garage'" },
+                        "name": { "type": "string", "description": "Nombre visible, valor: 'Taupe'" },
+                        "description": { "type": "string", "description": "valor: 'Taupe garage'" },
+                        "price": { "type": "number", "description": "Precio, valor: 1081" },
+                        "color": { "type": "string", "description": "Color hexadecimal, valor: '#BDB099'" },
+                        "transparent": { "type": "boolean", "description": "Transparente, valor: false" },
+                        "opacity": { "type": "number", "description": "Opacidad, valor: 1" },
+                        "texture": { "type": "string", "description": "URL o string de textura, valor: ''" },
+                        "textureRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false
+                        },
+                        "typeMaterial": { "type": "string", "description": "Tipo de material, valor: 'standard'" },
+                        "isGroup": { "type": "boolean", "description": "Es grupo, valor: false" },
+                        "normalMap": { "type": "string", "description": "Normal map, valor: ''" },
+                        "normalUvRepeat": {
+                          "type": "object",
+                          "properties": {
+                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
+                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                          },
+                          "required": ["wrapS", "wrapT"],
+                          "additionalProperties": false
+                        },
+                        "meshes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "nameMesh": { "type": "string", "description": "Nombre del mesh, valor: 'obj_partA_garage001'" },
+                              "orientationUV": { "type": "number", "description": "Orientación UV, valor: 0" }
+                            },
+                            "required": ["nameMesh", "orientationUV"],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": ["nameMaterial", "name", "description", "price", "color", "transparent", "opacity", "texture", "textureRepeat", "typeMaterial", "isGroup", "normalMap", "normalUvRepeat", "meshes"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "values": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    },
+                    "required": ["type", "values"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["uid", "value", "status", "nameObjectsGroup", "objectSubtype", "uidHotspot", "arrayMaterials", "options"],
+                "additionalProperties": false,
+                "description": "Pregunta Garage"
+              }
+            },
+            "required": ["Window Frame", "Door", "Garage", "status"],
+            "additionalProperties": false,
+            "description": "Sección de preguntas hotspotscon status, las preguntas son Window Frame, Door, Garage"
           }
         },
-        "required": ["q01", "q02", "q03"],
-        "additionalProperties": false
+        "required": ["questions", "hotspots"],
+        "additionalProperties": false,
+        "description": "preguntas hotspots y questions"
       }
     }
   ]
+
 }
 
 interface Question {
@@ -194,6 +444,31 @@ interface Questions {
 interface ToolArgs {
   questions?: Questions;
   [key: string]: any;
+}
+
+// Agregar interfaces para Hubspot
+interface HubspotSection {
+  uid: string;
+  value: string;
+  options: {
+    type: string;
+    values: string[];
+  };
+}
+
+interface HubspotStatus {
+  completed: boolean;
+  currentSection: string;
+  nextSection?: string;
+  totalSections: number;
+  answeredSections: number;
+}
+
+interface Hubspot {
+  status?: HubspotStatus;
+  interior: HubspotSection;
+  exterior: HubspotSection;
+  [key: string]: HubspotSection | HubspotStatus | undefined;
 }
 
 export class MCPClientGemini {
@@ -286,24 +561,43 @@ export class MCPClientGemini {
     let systemInstruction = '';
     if (flowType === 'questions') {
       systemInstruction = `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario.
-      Sigue el orden de las preguntas definidas en el schema.
+      IMPORTANTE: Debes seguir el orden exacto de las preguntas: q01, q02, q03.
+      
       Para cada pregunta:
-      - Si no tiene valor, es la pregunta actual y debes hacerla
-      - Si tiene valor, ya fue contestada y puedes pasar a la siguiente
-      - Si todas tienen valor, el flujo está completo
+      - q01: Pregunta el nombre del usuario (si no tiene valor)
+      - q02: Pregunta la ciudad (solo si q01 ya tiene valor)
+      - q03: Pregunta el presupuesto (solo si q01 y q02 ya tienen valor)
+      
+      NUNCA saltes preguntas. Siempre empieza con q01 si no tiene valor.
+      
+      IMPORTANTE: Solo responde con el texto de la pregunta o instrucción para el usuario. 
+      NO incluyas código, NO muestres la función que estás llamando.
+      Solo el texto natural de la pregunta.
       
       Actualiza el status de las preguntas:
       - completed: true si todas las preguntas tienen valor
-      - currentQuestion: el uid de la pregunta actual (la primera sin valor)
+      - currentQuestion: el uid de la pregunta actual (la primera sin valor en orden q01, q02, q03)
       - nextQuestion: el uid de la siguiente pregunta (si existe)
       - totalQuestions: número total de preguntas en el flujo
       - answeredQuestions: número de preguntas que tienen valor`;
     } else {
-      systemInstruction = `Con la información del las tools, necesito que me vayas guiando paso a paso con los puntos que hay en la tool, 
-      cada uno tiene un hotspot y multiples materiales a cambiar, ve guiándolo uno por uno, 
-      la estuctura tiene un estado para que le pongas en la llave "value", 
-      el estado "visited" si ya fue visitado o visit si es el punto a visitar, 
-      una vez que el usuario eliga material, puedes marcarlo como visitado y añadirle al siguiente visit`;
+      systemInstruction = `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario para las secciones de hotspots.
+      Sigue el orden de las secciones definidas en el schema.
+      Para cada sección:
+      - Si no tiene valor, es la sección actual y debes hacerla
+      - Si tiene valor, ya fue contestada y puedes pasar a la siguiente
+      - Si todas tienen valor, el flujo está completo
+      
+      IMPORTANTE: Solo responde con el texto de la pregunta o instrucción para el usuario. 
+      NO incluyas código, NO muestres la función que estás llamando.
+      Solo el texto natural de la pregunta.
+      
+      Actualiza el status de hotspots:
+      - completed: true si todas las secciones tienen valor
+      - currentSection: el uid de la sección actual (la primera sin valor)
+      - nextSection: el uid de la siguiente sección (si existe)
+      - totalSections: número total de secciones en el flujo
+      - answeredSections: número de secciones que tienen valor`;
     }
 
     const response1 = await chat.sendMessage({
@@ -337,8 +631,8 @@ export class MCPClientGemini {
       if (flowType === 'questions' && toolArgs.questions) {
         const questions = toolArgs.questions;
 
-        // Obtener todas las preguntas (excluyendo el status)
-        const questionKeys = Object.keys(questions).filter(key => key !== 'status');
+        // Obtener todas las preguntas en el orden correcto del schema
+        const questionKeys = ['q01', 'q02', 'q03']; // Orden específico del schema
         const totalQuestions = questionKeys.length;
 
         // Contar preguntas contestadas
@@ -347,7 +641,7 @@ export class MCPClientGemini {
           return question && question.value && question.value.trim() !== '';
         }).length;
 
-        // Determinar la pregunta actual y la siguiente
+        // Determinar la pregunta actual siguiendo el orden del schema
         let currentQuestion = '';
         let nextQuestion = '';
 
@@ -376,25 +670,77 @@ export class MCPClientGemini {
         };
       }
 
+      // Actualizar el status de hubspots
+      if (flowType === 'hotspots' && toolArgs.hotspots) {
+        const hubspot = toolArgs.hotspots as Hubspot;
+        // Obtener todas las secciones (excluyendo el status)
+        const sectionKeys = Object.keys(hubspot).filter(key => key !== 'status');
+        const totalSections = sectionKeys.length;
+        // Contar secciones contestadas
+        const answeredSections = sectionKeys.filter(key => {
+          const section = hubspot[key] as HubspotSection;
+          return section && section.value && section.value.trim() !== '';
+        }).length;
+        // Determinar la sección actual y la siguiente
+        let currentSection = '';
+        let nextSection = '';
+        for (let i = 0; i < sectionKeys.length; i++) {
+          const key = sectionKeys[i];
+          const section = hubspot[key] as HubspotSection;
+          if (!section.value || section.value.trim() === '') {
+            currentSection = key;
+            nextSection = sectionKeys[i + 1] || '';
+            break;
+          }
+        }
+        // Si no hay sección actual, significa que todas están contestadas
+        if (!currentSection && sectionKeys.length > 0) {
+          currentSection = sectionKeys[sectionKeys.length - 1];
+        }
+        hubspot.status = {
+          completed: answeredSections === totalSections,
+          currentSection,
+          nextSection,
+          totalSections,
+          answeredSections
+        };
+      }
+
       const response2 = await chat.sendMessage({
         message: JSON.stringify(toolArgs),
         config: {
           systemInstruction: flowType === 'questions'
-            ? `Con la información proporcionada, necesito que me ayudes a obtener el nombre del usuario. 
-               Si el usuario no ha proporcionado su nombre, pregúntale cómo se llama. 
-               Si ya proporcionó su nombre, pregúntale en qué ciudad le gustaría buscar una casa.
-               Las opciones de ciudades son: Phoenix, Austin, Las Vegas.
-               Usa la función start-recommendation-flow con el formato correcto para las preguntas q01 (nombre) y q02 (ciudad).
+            ? `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario.
+               IMPORTANTE: Debes seguir el orden exacto de las preguntas: q01, q02, q03.
+               
+               Para cada pregunta:
+               - q01: Pregunta el nombre del usuario (si no tiene valor)
+               - q02: Pregunta la ciudad (solo si q01 ya tiene valor)
+               - q03: Pregunta el presupuesto (solo si q01 y q02 ya tienen valor)
+               
+               NUNCA saltes preguntas. Siempre empieza con q01 si no tiene valor.
+               
+               IMPORTANTE: Solo responde con el texto de la pregunta o instrucción para el usuario. 
+               NO incluyas código, NO muestres la función que estás llamando.
+               Solo el texto natural de la pregunta.
+               
                Actualiza el status de las preguntas:
                - completed: true si todas las preguntas tienen valor
-               - currentQuestion: el uid de la pregunta actual (q01 o q02)
-               - totalQuestions: 2 (total de preguntas en el flujo)
+               - currentQuestion: el uid de la pregunta actual (la primera sin valor en orden q01, q02, q03)
+               - totalQuestions: número total de preguntas en el flujo
                - answeredQuestions: número de preguntas que tienen valor`
-            : `Con la información del las tools, necesito que me vayas guiando paso a paso con los puntos que hay en la tool, 
-               cada uno tiene un hotspot y multiples materiales a cambiar, ve guiándolo uno por uno, 
-               la estuctura tiene un estado para que le pongas en la llave "value", 
-               el estado "visited" si ya fue visitado o visit si es el punto a visitar, 
-               una vez que el usuario eliga material, puedes marcarlo como visitado y añadirle al siguiente visit`,
+            : `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario para las secciones de hotspots.
+               Sigue el orden de las secciones definidas en el schema.
+               
+               IMPORTANTE: Solo responde con el texto de la pregunta o instrucción para el usuario. 
+               NO incluyas código, NO muestres la función que estás llamando.
+               Solo el texto natural de la pregunta.
+               
+               Actualiza el status de hotspots:
+               - completed: true si todas las secciones tienen valor
+               - currentSection: el uid de la sección actual (la primera sin valor)
+               - totalSections: número total de secciones en el flujo
+               - answeredSections: número de secciones que tienen valor`,
           toolConfig: {
             functionCallingConfig: {
               mode: FunctionCallingConfigMode.ANY,
@@ -444,23 +790,47 @@ export class MCPClientGemini {
         return responseForUser;
 
       } else {
+        // Limpiar el texto de la respuesta para remover código de función
+        let cleanText = response2.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        // Remover código de función si está presente
+        if (cleanText.includes('```tool_code') || cleanText.includes('print(')) {
+          // Extraer solo la parte del texto antes del código
+          const textParts = cleanText.split('```');
+          if (textParts.length > 0) {
+            cleanText = textParts[0].trim();
+          }
+        }
+
         responseForUser.code = 200;
         responseForUser.historyChat.push({
           role: 'model',
-          parts: response2.candidates?.[0]?.content?.parts
+          parts: [{ text: cleanText }]
         });
-        responseForUser.text = response2.candidates?.[0]?.content?.parts;
+        responseForUser.text = [{ text: cleanText }];
         responseForUser.question = [toolArgs]
 
         return responseForUser;
       }
 
     } else if (response1?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      // Limpiar el texto de la respuesta para remover código de función
+      let cleanText = response1.candidates[0].content.parts[0].text;
+
+      // Remover código de función si está presente
+      if (cleanText.includes('```tool_code') || cleanText.includes('print(')) {
+        // Extraer solo la parte del texto antes del código
+        const textParts = cleanText.split('```');
+        if (textParts.length > 0) {
+          cleanText = textParts[0].trim();
+        }
+      }
+
       responseForUser.code = 200;
-      responseForUser.text = response1.candidates[0].content.parts;
+      responseForUser.text = [{ text: cleanText }];
       responseForUser.historyChat.push({
         role: "model",
-        parts: response1.candidates[0].content.parts
+        parts: [{ text: cleanText }]
       })
       return responseForUser
     } else {
