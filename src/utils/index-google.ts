@@ -593,10 +593,10 @@ export class MCPClientGemini {
       Solo el texto natural de la pregunta.
       
       Actualiza el status de hotspots:
-      - completed: true si todas las secciones tienen valor
-      - currentSection: el uid de la sección actual (la primera sin valor)
-      - nextSection: el uid de la siguiente sección (si existe)
-      - totalSections: número total de secciones en el flujo
+      - completed: true si todas las secciones tienen valor,
+      - currentSection: el uid de la sección actual (la primera sin valor),
+      - nextSection: el uid de la siguiente sección (si existe),
+      - totalSections: número total de secciones en el flujo,
       - answeredSections: número de secciones que tienen valor`;
     }
 
@@ -737,10 +737,11 @@ export class MCPClientGemini {
                Solo el texto natural de la pregunta.
                
                Actualiza el status de hotspots:
-               - completed: true si todas las secciones tienen valor
-               - currentSection: el uid de la sección actual (la primera sin valor)
-               - totalSections: número total de secciones en el flujo
-               - answeredSections: número de secciones que tienen valor`,
+                - completed: true si todas las secciones tienen valor,
+                - currentSection: el uid de la sección actual (la primera sin valor),
+                - nextSection: el uid de la siguiente sección (si existe),
+                - totalSections: número total de secciones en el flujo,
+                - answeredSections: número de secciones que tienen valor`,
           toolConfig: {
             functionCallingConfig: {
               mode: FunctionCallingConfigMode.ANY,
