@@ -565,8 +565,8 @@ export class MCPClientGemini {
       
       Para cada pregunta:
       - q01: Pregunta el nombre del usuario (si no tiene valor)
-      - q02: Pregunta la ciudad (solo si q01 ya tiene valor)
-      - q03: Pregunta el presupuesto (solo si q01 y q02 ya tienen valor)
+      - q02: Pregunta la ciudad donde está buscando una casa, las opciones vienen en el array options (solo si q01 ya tiene valor)
+      - q03: Pregunta el presupuesto que tiene para la casa, las opciones vienen en el array options (solo si q01 y q02 ya tienen valor)
       
       NUNCA saltes preguntas. Siempre empieza con q01 si no tiene valor.
       
@@ -715,8 +715,8 @@ export class MCPClientGemini {
                
                Para cada pregunta:
                - q01: Pregunta el nombre del usuario (si no tiene valor)
-               - q02: Pregunta la ciudad (solo si q01 ya tiene valor)
-               - q03: Pregunta el presupuesto (solo si q01 y q02 ya tienen valor)
+               - q02: Pregunta la ciudad donde está buscando una casa, las opciones vienen en el array options (solo si q01 ya tiene valor)
+               - q03: Pregunta el presupuesto que tiene para la casa, las opciones vienen en el array options (solo si q01 y q02 ya tienen valor)
                
                NUNCA saltes preguntas. Siempre empieza con q01 si no tiene valor.
                
