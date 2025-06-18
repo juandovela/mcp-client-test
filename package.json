@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node ./build/index.js /Users/juan/Documents/GitHub/vu-ai/build/index.js",
+    "start": "node --experimental-specifier-resolution=node ./build/src/index.js /Users/jlsoto/WorkspaceN/Web/dovela/mcp/vu-ai/build/index.js",
     "build": "tsc && chmod 777 /src/index.ts",
     "build:weather": "tsc && chmod 755 build/w-index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
