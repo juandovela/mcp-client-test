@@ -265,17 +265,17 @@ const eventFlow = {
                       "properties": {
                         "nameMaterial": { "type": "string", "description": "Nombre del material, valor: 'mtl_door'" },
                         "name": { "type": "string", "description": "Nombre visible, valor: 'Taupe'" },
-                        "description": { "type": "string", "description": "Descripción, valor: 'Taupe door'" },
+                        "description": { "type": "string", "description": "Taupe door" },
                         "price": { "type": "number", "description": "Precio, valor: 1081" },
                         "color": { "type": "string", "description": "Color hexadecimal, valor: '#BDB099'" },
-                        "transparent": { "type": "boolean", "description": "Transparente, valor: false" },
-                        "opacity": { "type": "number", "description": "Opacidad, valor: 1" },
-                        "texture": { "type": "string", "description": "URL o string de textura, valor: ''" },
+                        "transparent": { "type": "boolean", "description": "false" },
+                        "opacity": { "type": "number", "description": "1" },
+                        "texture": { "type": "string", "description": "''" },
                         "textureRepeat": {
                           "type": "object",
                           "properties": {
-                            "wrapS": { "type": "number", "description": "Repetición S, valor: 1" },
-                            "wrapT": { "type": "number", "description": "Repetición T, valor: 1" }
+                            "wrapS": { "type": "number", "description": "1" },
+                            "wrapT": { "type": "number", "description": "1" }
                           },
                           "required": ["wrapS", "wrapT"],
                           "additionalProperties": false
@@ -526,7 +526,7 @@ export class MCPClientGemini {
     console.log("Google GenAI chat initialized successfully.");
 
   }
-  async queryAIIFrame(text: string, history: any[], flowType: 'questions' | 'hotspots' = 'questions') {
+  async queryAIIFrame(text: string, history: any[], flowType: 'questions' | 'hotspots' | 'auto' = 'auto') {
     history.push({
       role: 'user',
       parts: [{
@@ -558,8 +558,33 @@ export class MCPClientGemini {
       return responseForUser;
     }
 
+    // Determinar el flujo actual basado en el estado de questions y hotspots
+    let currentFlowType = flowType;
+    if (flowType === 'auto') {
+      // Verificar el estado actual basado en el historial
+      const questionsCompleted = this.checkQuestionsStatus(history);
+      if (!questionsCompleted) {
+        currentFlowType = 'questions';
+      } else {
+        // Verificar si hotspots está completado
+        const hotspotsCompleted = this.checkHotspotsStatus(history);
+        if (!hotspotsCompleted) {
+          currentFlowType = 'hotspots';
+        } else {
+          // Ambos flujos están completados
+          responseForUser.code = 200;
+          responseForUser.text = [{ text: "¡Excelente! Has completado todos los flujos de preguntas y personalización. Tu información ha sido guardada correctamente." }];
+          responseForUser.historyChat.push({
+            role: "model",
+            parts: [{ text: "¡Excelente! Has completado todos los flujos de preguntas y personalización. Tu información ha sido guardada correctamente." }]
+          });
+          return responseForUser;
+        }
+      }
+    }
+
     let systemInstruction = '';
-    if (flowType === 'questions') {
+    if (currentFlowType === 'questions') {
       systemInstruction = `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario.
       IMPORTANTE: Debes seguir el orden exacto de las preguntas: q01, q02, q03.
       
@@ -580,7 +605,7 @@ export class MCPClientGemini {
       - nextQuestion: el uid de la siguiente pregunta (si existe)
       - totalQuestions: número total de preguntas en el flujo
       - answeredQuestions: número de preguntas que tienen valor`;
-    } else {
+    } else if (currentFlowType === 'hotspots') {
       systemInstruction = `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario para las secciones de hotspots.
       Sigue el orden de las secciones definidas en el schema.
       Para cada sección:
@@ -628,7 +653,7 @@ export class MCPClientGemini {
       console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
 
       // Actualizar el status de las preguntas
-      if (flowType === 'questions' && toolArgs.questions) {
+      if (currentFlowType === 'questions' && toolArgs.questions) {
         const questions = toolArgs.questions;
 
         // Obtener todas las preguntas en el orden correcto del schema
@@ -670,8 +695,8 @@ export class MCPClientGemini {
         };
       }
 
-      // Actualizar el status de hubspots
-      if (flowType === 'hotspots' && toolArgs.hotspots) {
+      // Actualizar el status de hotspots
+      if (currentFlowType === 'hotspots' && toolArgs.hotspots) {
         const hubspot = toolArgs.hotspots as Hubspot;
         // Obtener todas las secciones (excluyendo el status)
         const sectionKeys = Object.keys(hubspot).filter(key => key !== 'status');
@@ -709,7 +734,7 @@ export class MCPClientGemini {
       const response2 = await chat.sendMessage({
         message: JSON.stringify(toolArgs),
         config: {
-          systemInstruction: flowType === 'questions'
+          systemInstruction: currentFlowType === 'questions'
             ? `Con la información proporcionada, necesito que me ayudes a obtener las respuestas del usuario.
                IMPORTANTE: Debes seguir el orden exacto de las preguntas: q01, q02, q03.
                
@@ -737,11 +762,11 @@ export class MCPClientGemini {
                Solo el texto natural de la pregunta.
                
                Actualiza el status de hotspots:
-                - completed: true si todas las secciones tienen valor,
-                - currentSection: el uid de la sección actual (la primera sin valor),
-                - nextSection: el uid de la siguiente sección (si existe),
-                - totalSections: número total de secciones en el flujo,
-                - answeredSections: número de secciones que tienen valor`,
+               - completed: true si todas las secciones tienen valor,
+               - currentSection: el uid de la sección actual (la primera sin valor),
+               - nextSection: el uid de la siguiente sección (si existe),
+               - totalSections: número total de secciones en el flujo,
+               - answeredSections: número de secciones que tienen valor`,
           toolConfig: {
             functionCallingConfig: {
               mode: FunctionCallingConfigMode.ANY,
@@ -842,6 +867,45 @@ export class MCPClientGemini {
       })
       return responseForUser;
     }
+  }
+
+  // Métodos auxiliares para verificar el estado de los flujos
+  private checkQuestionsStatus(history: any[]): boolean {
+    // Buscar en el historial si questions ya está completado
+    for (let i = history.length - 1; i >= 0; i--) {
+      const message = history[i];
+      if (message.role === 'model' && message.parts) {
+        for (const part of message.parts) {
+          if (part.functionCall && part.functionCall.name === 'start-recommendation-flow') {
+            const args = part.functionCall.args as ToolArgs;
+            if (args.questions && args.questions.status) {
+              const status = args.questions.status as QuestionsStatus;
+              return status.completed === true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  private checkHotspotsStatus(history: any[]): boolean {
+    // Buscar en el historial si hotspots ya está completado
+    for (let i = history.length - 1; i >= 0; i--) {
+      const message = history[i];
+      if (message.role === 'model' && message.parts) {
+        for (const part of message.parts) {
+          if (part.functionCall && part.functionCall.name === 'start-recommendation-flow') {
+            const args = part.functionCall.args as ToolArgs;
+            if (args.hotspots && args.hotspots.status) {
+              const status = args.hotspots.status as HubspotStatus;
+              return status.completed === true;
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 
 };
