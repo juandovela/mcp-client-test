@@ -19,14 +19,20 @@ const mcpGemini = new MCPClientGemini();
 // const mcpDS = new MCPClientDeepSeek();
 // const mcpGPT = new MCPClientChatGPT();
 
-app.get('/', async (req:Request, res:Response) =>  {
+app.get('/', async (req: Request, res: Response) => {
 
   res.json({ data: 'app' }).status(200);
 
 })
 
-  
-app.post('/message-gemini-iframe', async (req:Request, res:Response) =>  {
+app.post('/data-json', async (req: Request, res: Response) => {
+  const { data } = req.body;
+  console.log(data);
+  res.json({ data: 'data-json' }).status(200);
+})
+
+
+app.post('/message-gemini-iframe', async (req: Request, res: Response) => {
 
 
   const { prompt, history, flowType } = req.body;
@@ -37,13 +43,13 @@ app.post('/message-gemini-iframe', async (req:Request, res:Response) =>  {
 
 });
 
- 
 
-app.listen(port, async () => { 
+
+app.listen(port, async () => {
   console.log("Server running at PORT: ", port);
   const systemInstruction = 'With provided information, guide step by step through the points in the tool. Guide one by one.';
   // await mcpGPT.initChat(systemInstruction );
-  await mcpGemini.initChat(systemInstruction );
+  await mcpGemini.initChat(systemInstruction);
   // await mcp.connectToServer(process.argv[2],systemInstruction );
 }).on("error", (error) => {
   // gracefully handle error
