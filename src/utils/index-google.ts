@@ -400,20 +400,6 @@ export class MCPClientGemini {
 
       console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
 
-      const response2 = await chat.sendMessage({
-        message: JSON.stringify(toolArgs),
-        config: {
-          systemInstruction: `Con la información proporcionada, podrías ir haciendome solo una pregunta a la vez. Yo te contestaré las demás en las siguientes interacciones. Comienza en la primera pregunta por preguntarme mi nombre`,
-          toolConfig: {
-            functionCallingConfig: {
-              // Force the model to call the specified function
-              mode: FunctionCallingConfigMode.ANY,
-              // Specify the exact tool name to force
-              allowedFunctionNames: ['start-recommendation-flow']
-            }
-          }
-        }
-      });
 
       // console.log('response2', response2?.candidates?.[0]?.content?.parts);
 
@@ -473,6 +459,21 @@ export class MCPClientGemini {
         return responseForUser;
 
       } else {
+
+        const response2 = await chat.sendMessage({
+          message: JSON.stringify(toolArgs),
+          config: {
+            systemInstruction: `Con la información proporcionada, podrías ir haciendome solo una pregunta a la vez. Yo te contestaré las demás en las siguientes interacciones. Comienza en la primera pregunta por preguntarme mi nombre`,
+            toolConfig: {
+              functionCallingConfig: {
+                // Force the model to call the specified function
+                mode: FunctionCallingConfigMode.ANY,
+                // Specify the exact tool name to force
+                allowedFunctionNames: ['start-recommendation-flow']
+              }
+            }
+          }
+        });
 
         responseForUser.code = 200;
         responseForUser.historyChat.push({
