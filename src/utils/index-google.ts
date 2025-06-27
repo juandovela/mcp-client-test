@@ -745,9 +745,201 @@ const dialogFlow = {
                 "required": ["id", "value", "desc", "response"],
                 "additionalProperties": false,
                 "description": "Pregunta Fascia Board"
-              }
+              },
+              "Exterior Wall Cladding": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Exterior Wall Cladding" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Exterior Wall Cladding" },
+                  "desc": { "type": "string", "description": "Exterior Wall Cladding" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Exterior Wall Cladding"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Exterior Wall Cladding"
+              },
+              "Brick Detailing": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Brick Detailing" },
+                  "value": { "type": "string", "description": "Valor seleccionado para v" },
+                  "desc": { "type": "string", "description": "Brick Detailing" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Brick Detailing"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Brick Detailing"
+              },
+              "Roof Covering": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Roof Covering" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Roof Covering" },
+                  "desc": { "type": "string", "description": "Roof Covering" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Roof Covering"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Roof Covering"
+              },
+              "Floor": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Floor" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Floor" },
+                  "desc": { "type": "string", "description": "Floor" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Floor"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Floor"
+              },
+              "Countertops": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Countertops" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Countertops" },
+                  "desc": { "type": "string", "description": "Countertops" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Countertops"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Countertops"
+              },
+              "Cabinets": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "description": "Identificador del item, valor es Cabinets" },
+                  "value": { "type": "string", "description": "Valor seleccionado para Cabinets" },
+                  "desc": { "type": "string", "description": "Cabinets" },
+                  "response": {
+                    "type": "object",
+                    "properties": {
+                      "options": {
+                        "type": "object",
+                        "properties": {
+                          "type": { "type": "string", "description": "value: select" },
+                          "values": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "add to array: Cabinets"
+                          }
+                        },
+                        "required": ["type", "values"],
+                        "additionalProperties": false,
+                        "description": "Configuración del select para la pregunta"
+                      }
+                    }
+                  }
+                },
+                "required": ["id", "value", "desc", "response"],
+                "additionalProperties": false,
+                "description": "Pregunta Cabinets"
+              },
             },
-            "required": ["Window Frame", "Door", "Garage", "Fascia Board", "status"],
+            "required": ["Window Frame", "Door", "Garage", "Fascia Board", "Exterior Wall Cladding", "Brick Detailing", "Roof Covering", "Floor", "Countertops", "Cabinets", "status"],
             "additionalProperties": false,
             "description": "Sección de preguntas hotspotscon status, las preguntas son Window Frame, Door, Garage"
           }
