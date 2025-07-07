@@ -362,16 +362,100 @@ const question = {
   },
 };
 
+// const questionMCP = {
+//   "tools": [
+//     {
+//       "name": "start-recommendation-flow",
+//       "description": "Please refill data of schema with data gave for user",
+//       "inputSchema": {
+//         "type": "object",
+//         "properties": {
+//           "questionNameJSON": {
+//             "type": "object",
+//             "properties": {
+//               "uid": {
+//                 "type": "string",
+//                 "description": "q01"
+//               },
+//               "value": {
+//                 "type": "string",
+//                 "description": "Nombre con el que se identifica el usuario, puede colocar el suyo o preguntar si lo llamamos invitado o amigo"
+//               },
+//               "active": {
+//                 "type": "boolean",
+//                 "description": "Si el valor de name está vacio, deja este valor en true, sino cambialo a false"
+//               },
+//               "options": {
+//                 "type": "array",
+//                 "items": {
+//                   "type": "string"
+//                 },
+//                 "description": "Añade al array los string, guest y friend"
+//               }
+//             },
+//             "required": [
+//               "uid",
+//               "value",
+//               "active"
+//             ],
+//             "additionalProperties": false,
+//             "description": "Regresa un json con el uid y el name que ha elegido el usuario"
+//           },
+//           "questionLocationJSON": {
+//             "type": "object",
+//             "properties": {
+//               "uid": {
+//                 "type": "string",
+//                 "description": "q02"
+//               },
+//               "value": {
+//                 "type": "string",
+//                 "description": "Nombre del lugar donde el usuario busca hogar"
+//               },
+//               "active": {
+//                 "type": "boolean",
+//                 "description": "Si el valor de location está vacio, deja este valor en true, sino cambialo a false"
+//               },
+//               "options": {
+//                 "type": "array",
+//                 "items": {
+//                   "type": "string"
+//                 },
+//                 "description": "Añade al array los string, \"Austion\", \"Phoenix\", \"Washington, \"McCordsville\""
+//               }
+//             },
+//             "required": [
+//               "uid",
+//               "value",
+//               "active"
+//             ],
+//             "additionalProperties": false,
+//             "description": "Regresa un json con el uid y el location que ha elegido el usuario"
+//           }
+//         },
+//         "required": [
+//           "questionNameJSON",
+//           "questionLocationJSON"
+//         ],
+//         "additionalProperties": false,
+//         "$schema": "http://json-schema.org/draft-07/schema#"
+//       }
+//     }
+//   ]
+// }
+
 const questionMCP = {
   "tools": [
     {
       "name": "start-recommendation-flow",
-      "description": "Please refill data of schema with data gave for user",
+      "description": "Guía al usuario a través de un flujo para recomendarle una comunidad. Primero, pregunta por su nombre y la ubicación deseada. Después de recibir la ubicación, se asume que se hace una llamada a una API que devuelve las comodidades ('amenities') disponibles. Finalmente, se le presentan estas comodidades al usuario para que seleccione sus preferidas.",
       "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
           "questionNameJSON": {
             "type": "object",
+            "description": "Regresa un JSON con el uid y el nombre que ha elegido el usuario. Este es el primer paso.",
             "properties": {
               "uid": {
                 "type": "string",
@@ -379,30 +463,29 @@ const questionMCP = {
               },
               "value": {
                 "type": "string",
-                "description": "Nombre con el que se identifica el usuario, puede colocar el suyo o preguntar si lo llamamos invitado o amigo"
+                "description": "Nombre con el que se identifica el usuario. Puede colocar el suyo o puedes preguntar si lo llamamos 'invitado' o 'amigo'."
               },
               "active": {
                 "type": "boolean",
-                "description": "Si el valor de name está vacio, deja este valor en true, sino cambialo a false"
+                "description": "Si el valor de 'value' está vacío, deja este valor en true; de lo contrario, cámbialo a false."
               },
               "options": {
                 "type": "array",
+                "description": "Si el usuario no da un nombre, añade a este array los strings 'invitado' y 'amigo' como opciones.",
                 "items": {
                   "type": "string"
-                },
-                "description": "Añade al array los string, guest y friend"
+                }
               }
             },
             "required": [
               "uid",
               "value",
               "active"
-            ],
-            "additionalProperties": false,
-            "description": "Regresa un json con el uid y el name que ha elegido el usuario"
+            ]
           },
           "questionLocationJSON": {
             "type": "object",
+            "description": "Regresa un JSON con el uid y la ubicación que ha elegido el usuario. Este es el segundo paso.",
             "properties": {
               "uid": {
                 "type": "string",
@@ -410,35 +493,94 @@ const questionMCP = {
               },
               "value": {
                 "type": "string",
-                "description": "Nombre del lugar donde el usuario busca hogar"
+                "description": "Nombre del lugar donde el usuario busca un hogar."
               },
               "active": {
                 "type": "boolean",
-                "description": "Si el valor de location está vacio, deja este valor en true, sino cambialo a false"
+                "description": "Si el valor de 'value' está vacío y el nombre ya fue proporcionado, deja este valor en true; de lo contrario, cámbialo a false."
               },
               "options": {
                 "type": "array",
+                "description": "Añade al array los strings 'Austin', 'Phoenix', 'Washington', 'McCordsville' como opciones de ejemplo. Ese array no debe estar vacío.",
                 "items": {
                   "type": "string"
-                },
-                "description": "Añade al array los string, \"Austion\", \"Phoenix\", \"Washington, \"McCordsville\""
+                }
               }
             },
             "required": [
               "uid",
               "value",
-              "active"
-            ],
-            "additionalProperties": false,
-            "description": "Regresa un json con el uid y el location que ha elegido el usuario"
+              "active",
+              "options"
+            ]
+          },
+          "questionAmenitiesJSON": {
+            "type": "object",
+            "description": "Este es el tercer y último paso. Después de obtener la ubicación, se asume que una API ha devuelto una lista de comodidades ('amenities'). Esta herramienta debe tomar esas comodidades, presentarlas como opciones y registrar la selección del usuario.",
+            "properties": {
+              "uid": {
+                "type": "string",
+                "description": "q03"
+              },
+              "value": {
+                "type": "array",
+                "description": "Un array que contendrá las comodidades que el usuario ha seleccionado de la lista de opciones.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "active": {
+                "type": "boolean",
+                "description": "Debe ser 'true' si el nombre y la ubicación ya han sido proporcionados, pero las comodidades aún no se han seleccionado. De lo contrario, 'false'."
+              },
+              "options": {
+                "type": "array",
+                "description": "IMPORTANTE: Este array debe ser poblado dinámicamente. Después de que el usuario proporciona una ubicación, simula que una llamada a una API devuelve una lista de comunidades. Debes extraer TODAS las 'amenities' únicas de esas comunidades y usar esa lista para llenar este array de opciones que se le presentarán al usuario.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "communityUID": {
+                "type": "string",
+                "description": "UID de la comunidad seleccionada por el usuario. Si el usuario no ha seleccionado una comunidad, este campo estará vacío.",
+              },
+              "communities": {
+                "type": "array",
+                "description": "IMPORTANTE: Este campo debe ser poblado con la lista COMPLETA de comunidades (con su UID y nombre) que se recibieron de la llamada a la API. Esta es la misma lista de la cual se extraen las 'amenities' para el campo 'options'.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uid": {
+                      "type": "string",
+                      "description": "UID de la comunidad, obtenido de la API."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nombre de la comunidad, obtenido de la API."
+                    }
+                  },
+                  "required": ["uid", "name"]
+                }
+              }
+            },
+            "required": [
+              "uid",
+              "value",
+              "active",
+              "options",
+              "communityUID"
+            ]
+          },
+          "finalMessage": {
+            "type": "string",
+            "description": "IMPORTANTE: Si el campo 'communityUID' en 'questionAmenitiesJSON' ya contiene un valor (no está vacío), pobla este campo con el mensaje '¡Excelente! Hemos encontrado la comunidad perfecta para ti. ¿Quieres que te muestre los planos de las casas disponibles?'. De lo contrario, deja este campo vacío o nulo."
           }
         },
         "required": [
           "questionNameJSON",
-          "questionLocationJSON"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
+          "questionLocationJSON",
+          "questionAmenitiesJSON"
+        ]
       }
     }
   ]
