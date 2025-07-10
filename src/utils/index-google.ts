@@ -696,17 +696,17 @@ export class MCPClientGemini {
 
     if (response1?.candidates?.[0]?.content?.parts?.[0]?.functionCall) {
       const functionCall = response1.candidates[0].content.parts[0].functionCall;
-      console.log('Function Call:', functionCall);
+      // console.log('Function Call:', functionCall);
 
       const toolName = functionCall.name;
       const toolArgs = functionCall.args;
 
-      console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
+      // console.log('toolArgs:', JSON.stringify(toolArgs, null, 2));
 
 
       // console.log('response2', response2?.candidates?.[0]?.content?.parts);
 
-      console.log('checktoolArgs', toolArgs);
+      // console.log('checktoolArgs', toolArgs);
       
       // @ts-ignore
       const checkForDataComplete = Object.keys(toolArgs).map((key: string) => {
@@ -723,17 +723,17 @@ export class MCPClientGemini {
         }
       });
 
-      console.log('checkForDataComplete', checkForDataComplete);
+      // console.log('checkForDataComplete', checkForDataComplete);
   
       let checker = checkForDataComplete.every((v:{ active: boolean, value: any }) => !!v.value);
 
       if (checker) {
 
-        console.log('checkForDataComplete2', checker);
+        // console.log('checkForDataComplete2', checker);
 
         const alertsData = await makeLLMAlgoliaRequest(toolArgs);
 
-        console.log('alertsData', alertsData)
+        // console.log('alertsData', alertsData)
     
         if (!alertsData ) {
           return {
@@ -749,9 +749,56 @@ export class MCPClientGemini {
         const response3 = await chat.sendMessage({
           message: alertsData,
           config: {
-            systemInstruction: "Respondeme con las 2 mejores casas del la lista que te di con las información que tienes, si crees que solo 1 es mejor, entonces solo esa, resalta las amenidades, y pregunta al usuario si busca algo más conforme a la información que tienes, así podrás filtrar mejor la búsqueda",
+            responseMimeType: 'application/json',
+            systemInstruction: `Eres un asistente virtual que ayuda a los usuarios a encontrar comunidades residenciales. Cuando respondas con una lista de comunidades y sus amenidades, por favor, sigue este formato riguroso:
+
+              1.  Comienza con un saludo general.
+              2.  Luego, para CADA comunidad, proporciona un bloque de texto separado que incluya el nombre de la comunidad, su UID y muéstrale las bondades de las amenidades.
+              3.  Finaliza preguntando si le gustó alguna de la comunidades o sí buscar filtrando por amenidades que desee tenga la comunidad.
+
+              Asegúrate de que cada uno de estos puntos esté en un segmento de texto distinto en tu respuesta JSON, como si cada uno fuera una 'part' separada.
+              
+              Ejemplo de cómo me gustaría la salida (JSON):
+
+              {
+                "role": "model",
+                "parts": [
+                  {
+                    "text": "¡Excelente! En Phoenix, encontré las siguientes comunidades con sus amenidades:"
+                  },
+                  {
+                    "text": "**Southwest Living (UID: eFgH9iJ0kL1mN2oP3qRs):**\n\n* **Desert Landscape:** Disfruta de la belleza natural del desierto.\n* **Roof Deck:** Relájate y admira las vistas desde la terraza en la azotea.\n* **Co-working Space:** Ideal para trabajar desde casa con un espacio dedicado."
+                  },
+                  {
+                    "text": "**Phoenix Luxury Homes (UID: lKjH0gFdS1aQ2wE3rT):**\n\n* **Hiking Access:** Fácil acceso a senderos para caminatas.\n* **Gated Community:** Mayor seguridad y privacidad.\n* **Community Pool:** Refréscate y disfruta de la piscina comunitaria."
+                  },
+                  {
+                    "text": "**Desert Oasis Living (UID: aSdF7gH8jK9lM0nB1v):**\n\n* **Mountain Views:** Vistas impresionantes de las montañas.\n* **Private Pools:** Disfruta de tu propia piscina privada.\n* **Upscale Finishes:** Acabados de lujo en las viviendas."
+                  },
+                  {
+                    "text": "¿Alguna de estas amenidades te llama la atención? ¿O estás buscando algo más específico?"
+                  }
+                ]
+              }
+              `,
           }
         });
+
+        console.log('response3', response3?.candidates?.[0].content?.parts);
+
+        if(response3?.candidates?.[0].content?.parts?.length) {
+
+          const newJson = JSON.parse(response3?.candidates?.[0].content?.parts?.[0]?.text || '{}');
+          responseForUser.code = 200;
+          responseForUser.historyChat.push({
+            role: 'model',
+            parts: [newJson]
+          });
+          responseForUser.text = [newJson];
+          responseForUser.question = [toolArgs];
+
+          return responseForUser;
+        }
 
         responseForUser.code = 200;
         responseForUser.historyChat.push({
